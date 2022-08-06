@@ -48,6 +48,9 @@ public class SwiftHealthPlugin: NSObject, FlutterPlugin {
     let SLEEP_IN_BED = "SLEEP_IN_BED"
     let SLEEP_ASLEEP = "SLEEP_ASLEEP"
     let SLEEP_AWAKE = "SLEEP_AWAKE"
+    let SLEEP_LIGHT = "SLEEP_LIGHT"
+    let SLEEP_DEEP = "SLEEP_DEEP"
+    let SLEEP_REM = "SLEEP_REM"
     let EXERCISE_TIME = "EXERCISE_TIME"
     let WORKOUT = "WORKOUT"
     let HEADACHE_UNSPECIFIED = "HEADACHE_UNSPECIFIED"
@@ -395,7 +398,9 @@ public class SwiftHealthPlugin: NSObject, FlutterPlugin {
                         "date_from": Int(sample.startDate.timeIntervalSince1970 * 1000),
                         "date_to": Int(sample.endDate.timeIntervalSince1970 * 1000),
                         "source_id": sample.sourceRevision.source.bundleIdentifier,
-                        "source_name": sample.sourceRevision.source.name
+                        "source_name": sample.sourceRevision.source.name,
+                        "source_type": sample.device?.model ?? sample.sourceRevision.productType ?? "",
+                        "os_version": sample.device?.softwareVersion ?? sample.sourceRevision.operatingSystemVersion ?? sample.sourceRevision.version ?? "",
                     ]
                 }
                 DispatchQueue.main.async {
@@ -411,6 +416,15 @@ public class SwiftHealthPlugin: NSObject, FlutterPlugin {
                 }
                 if (dataTypeKey == self.SLEEP_AWAKE) {
                     samplesCategory = samplesCategory.filter { $0.value == 2 }
+                }
+                if (dataTypeKey == self.SLEEP_LIGHT) {
+                    samplesCategory = samplesCategory.filter { $0.value == 3 }
+                }
+                if (dataTypeKey == self.SLEEP_DEEP) {
+                    samplesCategory = samplesCategory.filter { $0.value == 4 }
+                }
+                if (dataTypeKey == self.SLEEP_REM) {
+                    samplesCategory = samplesCategory.filter { $0.value == 5 }
                 }
                 if (dataTypeKey == self.HEADACHE_UNSPECIFIED) {
                     samplesCategory = samplesCategory.filter { $0.value == 0 }
@@ -434,7 +448,9 @@ public class SwiftHealthPlugin: NSObject, FlutterPlugin {
                         "date_from": Int(sample.startDate.timeIntervalSince1970 * 1000),
                         "date_to": Int(sample.endDate.timeIntervalSince1970 * 1000),
                         "source_id": sample.sourceRevision.source.bundleIdentifier,
-                        "source_name": sample.sourceRevision.source.name
+                        "source_name": sample.sourceRevision.source.name,
+                        "source_type": sample.device?.model ?? sample.sourceRevision.productType ?? "",
+                        "os_version": sample.device?.softwareVersion ?? sample.sourceRevision.operatingSystemVersion ?? sample.sourceRevision.version ?? "",
                     ]
                 }
                 DispatchQueue.main.async {
@@ -454,7 +470,9 @@ public class SwiftHealthPlugin: NSObject, FlutterPlugin {
                         "date_from": Int(sample.startDate.timeIntervalSince1970 * 1000),
                         "date_to": Int(sample.endDate.timeIntervalSince1970 * 1000),
                         "source_id": sample.sourceRevision.source.bundleIdentifier,
-                        "source_name": sample.sourceRevision.source.name
+                        "source_name": sample.sourceRevision.source.name,
+                        "source_type": sample.device?.model ?? sample.sourceRevision.productType ?? "",
+                        "os_version": sample.device?.softwareVersion ?? sample.sourceRevision.operatingSystemVersion ?? sample.sourceRevision.version ?? "",
                     ]
                 }
                 
@@ -480,7 +498,9 @@ public class SwiftHealthPlugin: NSObject, FlutterPlugin {
                         "date_from": Int(sample.startDate.timeIntervalSince1970 * 1000),
                         "date_to": Int(sample.endDate.timeIntervalSince1970 * 1000),
                         "source_id": sample.sourceRevision.source.bundleIdentifier,
-                        "source_name": sample.sourceRevision.source.name
+                        "source_name": sample.sourceRevision.source.name,
+                        "source_type": sample.device?.model ?? sample.sourceRevision.productType ?? "",
+                        "os_version": sample.device?.softwareVersion ?? sample.sourceRevision.operatingSystemVersion ?? sample.sourceRevision.version ?? "",
                     ]
                 }
                 DispatchQueue.main.async {
@@ -719,6 +739,9 @@ public class SwiftHealthPlugin: NSObject, FlutterPlugin {
             dataTypesDict[SLEEP_IN_BED] = HKSampleType.categoryType(forIdentifier: .sleepAnalysis)!
             dataTypesDict[SLEEP_ASLEEP] = HKSampleType.categoryType(forIdentifier: .sleepAnalysis)!
             dataTypesDict[SLEEP_AWAKE] = HKSampleType.categoryType(forIdentifier: .sleepAnalysis)!
+            dataTypesDict[SLEEP_LIGHT] = HKSampleType.categoryType(forIdentifier: .sleepAnalysis)!
+            dataTypesDict[SLEEP_DEEP] = HKSampleType.categoryType(forIdentifier: .sleepAnalysis)!
+            dataTypesDict[SLEEP_REM] = HKSampleType.categoryType(forIdentifier: .sleepAnalysis)!
             dataTypesDict[EXERCISE_TIME] = HKSampleType.quantityType(forIdentifier: .appleExerciseTime)!
             dataTypesDict[WORKOUT] = HKSampleType.workoutType()
             

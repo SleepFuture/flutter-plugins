@@ -12,6 +12,8 @@ class HealthDataPoint {
   String _deviceId;
   String _sourceId;
   String _sourceName;
+  String _sourceType;
+  String _osVersion;
 
   HealthDataPoint(
       this._value,
@@ -22,7 +24,9 @@ class HealthDataPoint {
       this._platform,
       this._deviceId,
       this._sourceId,
-      this._sourceName) {
+      this._sourceName,
+      this._sourceType,
+      this._osVersion) {
     // set the value to minutes rather than the category
     // returned by the native API
     if (type == HealthDataType.MINDFULNESS ||
@@ -33,7 +37,10 @@ class HealthDataPoint {
         type == HealthDataType.HEADACHE_SEVERE ||
         type == HealthDataType.SLEEP_IN_BED ||
         type == HealthDataType.SLEEP_ASLEEP ||
-        type == HealthDataType.SLEEP_AWAKE) {
+        type == HealthDataType.SLEEP_AWAKE ||
+        type == HealthDataType.SLEEP_LIGHT ||
+        type == HealthDataType.SLEEP_DEEP ||
+        type == HealthDataType.SLEEP_REM) {
       this._value = _convertMinutes();
     }
   }
@@ -65,7 +72,10 @@ class HealthDataPoint {
             .indexOf(json['platform_type'])],
         json['device_id'],
         json['source_id'],
-        json['source_name']);
+        json['source_name'],
+        json['source_type'],
+        json['os_version'],
+    );
   }
 
   /// Converts the [HealthDataPoint] to a json object
@@ -78,7 +88,9 @@ class HealthDataPoint {
         'platform_type': PlatformTypeJsonValue[platform],
         'device_id': deviceId,
         'source_id': sourceId,
-        'source_name': sourceName
+        'source_name': sourceName,
+        'source_type': sourceType,
+        'os_version': osVersion
       };
 
   @override
@@ -91,7 +103,10 @@ class HealthDataPoint {
     platform: $platform,
     deviceId: $deviceId,
     sourceId: $sourceId,
-    sourceName: $sourceName""";
+    sourceName: $sourceName,
+    sourceType: $sourceType,
+    osVersion: $osVersion
+    """;
 
   // / The quantity value of the data point
   HealthValue get value => _value;
@@ -126,6 +141,12 @@ class HealthDataPoint {
   /// The name of the source from which the data point was fetched.
   String get sourceName => _sourceName;
 
+  /// The type of the system from which the data point was fetched.
+  String get sourceType => _sourceType;
+
+  /// The version of the operation system from which the data point was fetched.
+  String get osVersion => _osVersion;
+
   @override
   bool operator ==(Object o) {
     return o is HealthDataPoint &&
@@ -137,10 +158,12 @@ class HealthDataPoint {
         this.platform == o.platform &&
         this.deviceId == o.deviceId &&
         this.sourceId == o.sourceId &&
-        this.sourceName == o.sourceName;
+        this.sourceName == o.sourceName &&
+        this.sourceType == o.sourceType &&
+        this.osVersion == o.osVersion;
   }
 
   @override
   int get hashCode => Object.hash(value, unit, dateFrom, dateTo, type, platform,
-      deviceId, sourceId, sourceName);
+      deviceId, sourceId, sourceName, sourceType, osVersion);
 }

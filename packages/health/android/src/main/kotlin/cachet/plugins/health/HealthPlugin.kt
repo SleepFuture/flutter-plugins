@@ -62,6 +62,9 @@ class HealthPlugin(private var channel: MethodChannel? = null) : MethodCallHandl
   private var SLEEP_ASLEEP = "SLEEP_ASLEEP"
   private var SLEEP_AWAKE = "SLEEP_AWAKE"
   private var SLEEP_IN_BED = "SLEEP_IN_BED"
+  private var SLEEP_LIGHT = "SLEEP_LIGHT"
+  private var SLEEP_DEEP = "SLEEP_DEEP"
+  private var SLEEP_REM = "SLEEP_REM"
   private var WORKOUT = "WORKOUT"
 
   val workoutTypeMap = mapOf(
@@ -272,6 +275,9 @@ class HealthPlugin(private var channel: MethodChannel? = null) : MethodCallHandl
       SLEEP_ASLEEP -> DataType.TYPE_SLEEP_SEGMENT
       SLEEP_AWAKE -> DataType.TYPE_SLEEP_SEGMENT
       SLEEP_IN_BED -> DataType.TYPE_SLEEP_SEGMENT
+      SLEEP_LIGHT -> DataType.TYPE_SLEEP_SEGMENT
+      SLEEP_DEEP -> DataType.TYPE_SLEEP_SEGMENT
+      SLEEP_REM -> DataType.TYPE_SLEEP_SEGMENT
       WORKOUT -> DataType.TYPE_ACTIVITY_SEGMENT
       else -> throw IllegalArgumentException("Unsupported dataType: $type")
     }
@@ -296,6 +302,9 @@ class HealthPlugin(private var channel: MethodChannel? = null) : MethodCallHandl
       SLEEP_ASLEEP -> Field.FIELD_SLEEP_SEGMENT_TYPE
       SLEEP_AWAKE -> Field.FIELD_SLEEP_SEGMENT_TYPE
       SLEEP_IN_BED -> Field.FIELD_SLEEP_SEGMENT_TYPE
+      SLEEP_LIGHT -> Field.FIELD_SLEEP_SEGMENT_TYPE
+      SLEEP_DEEP -> Field.FIELD_SLEEP_SEGMENT_TYPE
+      SLEEP_REM -> Field.FIELD_SLEEP_SEGMENT_TYPE
       WORKOUT -> Field.FIELD_ACTIVITY
       else -> throw IllegalArgumentException("Unsupported dataType: $type")
     }
@@ -644,6 +653,37 @@ class HealthPlugin(private var channel: MethodChannel? = null) : MethodCallHandl
       val healthData: MutableList<Map<String, Any?>> = mutableListOf()
       for (session in response.sessions) {
 
+        // Handle for Get more sleep data: LIGHT, DEEP, REM
+        if (type == SLEEP_LIGHT || type == SLEEP_DEEP || type == SLEEP_REM) {
+          val dataSets = response.getDataSet(session)
+          if (dataSets.isNotEmpty()) {
+            for (dataSet in dataSets) {
+              for (dataPoint in dataSet.dataPoints) {
+                val sleepStageVal =
+                  dataPoint.getValue(Field.FIELD_SLEEP_SEGMENT_TYPE).asInt()
+                if ((sleepStageVal == 4 && type == SLEEP_LIGHT) || (sleepStageVal == 5 && type == SLEEP_DEEP) || (sleepStageVal == 6 && type == SLEEP_REM)) {
+                  healthData.add(
+                    hashMapOf(
+                      "value" to dataPoint.getEndTime(TimeUnit.MINUTES) - dataPoint.getStartTime(
+                        TimeUnit.MINUTES
+                      ),
+                      "date_from" to dataPoint.getStartTime(TimeUnit.MILLISECONDS),
+                      "date_to" to dataPoint.getEndTime(TimeUnit.MILLISECONDS),
+                      "unit" to "MINUTES",
+                      "source_name" to (dataPoint.originalDataSource.appPackageName
+                        ?: (dataPoint.originalDataSource.device?.model
+                          ?: "unknown")),
+                      "source_id" to dataPoint.originalDataSource.streamIdentifier,
+                      "source_type" to dataPoint.originalDataSource.device?.type?.toString(),
+                      "os_version" to dataPoint.originalDataSource.device?.manufacturer
+                    )
+                  )
+                }
+              }
+            }
+          }
+        }
+
         // Return sleep time in Minutes if requested ASLEEP data
         if (type == SLEEP_ASLEEP) {
           healthData.add(
@@ -653,7 +693,9 @@ class HealthPlugin(private var channel: MethodChannel? = null) : MethodCallHandl
               "date_to" to session.getEndTime(TimeUnit.MILLISECONDS),
               "unit" to "MINUTES",
               "source_name" to session.appPackageName,
-              "source_id" to session.identifier
+              "source_id" to session.identifier,
+              "source_type" to "",
+              "os_version" to ""
             )
           )
         }
@@ -680,7 +722,9 @@ class HealthPlugin(private var channel: MethodChannel? = null) : MethodCallHandl
                       "source_name" to (dataPoint.originalDataSource.appPackageName
                         ?: (dataPoint.originalDataSource.device?.model
                           ?: "unknown")),
-                      "source_id" to dataPoint.originalDataSource.streamIdentifier
+                      "source_id" to dataPoint.originalDataSource.streamIdentifier,
+                      "source_type" to dataPoint.originalDataSource.device?.type?.toString(),
+                      "os_version" to dataPoint.originalDataSource.device?.manufacturer
                     )
                   )
                 }
@@ -696,7 +740,9 @@ class HealthPlugin(private var channel: MethodChannel? = null) : MethodCallHandl
                 "date_to" to session.getEndTime(TimeUnit.MILLISECONDS),
                 "unit" to "MINUTES",
                 "source_name" to session.appPackageName,
-                "source_id" to session.identifier
+                "source_id" to session.identifier,
+                "source_type" to "",
+                "os_version" to ""
               )
             )
           }
