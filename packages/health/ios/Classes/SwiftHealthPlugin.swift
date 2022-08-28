@@ -400,7 +400,7 @@ public class SwiftHealthPlugin: NSObject, FlutterPlugin {
                         "source_id": sample.sourceRevision.source.bundleIdentifier,
                         "source_name": sample.sourceRevision.source.name,
                         "source_type": sample.device?.model ?? sample.sourceRevision.productType ?? "",
-                        "os_version": sample.device?.softwareVersion ?? sample.sourceRevision.operatingSystemVersion ?? sample.sourceRevision.version ?? "",
+                        "os_version": sample.device?.softwareVersion ?? sample.sourceRevision.operatingSystemVersion
                     ]
                 }
                 DispatchQueue.main.async {
@@ -450,7 +450,7 @@ public class SwiftHealthPlugin: NSObject, FlutterPlugin {
                         "source_id": sample.sourceRevision.source.bundleIdentifier,
                         "source_name": sample.sourceRevision.source.name,
                         "source_type": sample.device?.model ?? sample.sourceRevision.productType ?? "",
-                        "os_version": sample.device?.softwareVersion ?? sample.sourceRevision.operatingSystemVersion ?? sample.sourceRevision.version ?? "",
+                        "os_version": sample.device?.softwareVersion ?? sample.sourceRevision.operatingSystemVersion
                     ]
                 }
                 DispatchQueue.main.async {
@@ -472,7 +472,7 @@ public class SwiftHealthPlugin: NSObject, FlutterPlugin {
                         "source_id": sample.sourceRevision.source.bundleIdentifier,
                         "source_name": sample.sourceRevision.source.name,
                         "source_type": sample.device?.model ?? sample.sourceRevision.productType ?? "",
-                        "os_version": sample.device?.softwareVersion ?? sample.sourceRevision.operatingSystemVersion ?? sample.sourceRevision.version ?? "",
+                        "os_version": sample.device?.softwareVersion ?? sample.sourceRevision.operatingSystemVersion
                     ]
                 }
                 
@@ -500,7 +500,7 @@ public class SwiftHealthPlugin: NSObject, FlutterPlugin {
                         "source_id": sample.sourceRevision.source.bundleIdentifier,
                         "source_name": sample.sourceRevision.source.name,
                         "source_type": sample.device?.model ?? sample.sourceRevision.productType ?? "",
-                        "os_version": sample.device?.softwareVersion ?? sample.sourceRevision.operatingSystemVersion ?? sample.sourceRevision.version ?? "",
+                        "os_version": sample.device?.softwareVersion ?? sample.sourceRevision.operatingSystemVersion
                     ]
                 }
                 DispatchQueue.main.async {
